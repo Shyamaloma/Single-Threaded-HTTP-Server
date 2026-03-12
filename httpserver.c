@@ -55,7 +55,6 @@ void error_forbidden(int connfd) {
 
 void write_func(size_t initial_read, size_t header_len, size_t remaining, int w_fd, int connfd,
     char buf[BUFFER_SIZE]) {
-    // printf("Initial Read Size: %zu\nHeader Len: %zu\n", initial_read, header_len);
     if (initial_read > header_len) {
         size_t buffered_data_len = initial_read - header_len;
         size_t to_write = (buffered_data_len < remaining) ? buffered_data_len : remaining;
@@ -64,11 +63,9 @@ void write_func(size_t initial_read, size_t header_len, size_t remaining, int w_
         size_t bytes_left = to_write;
 
         while (bytes_left > 0) {
-            printf("W_FD: %d\nPointer: %s\nBytes Left: %lu\n", w_fd, p, bytes_left);
             ssize_t bytes_written = write_n_bytes(w_fd, p, bytes_left);
 
             if (bytes_written < 0) {
-                printf("Something wen wrong when writing\n");
                 return;
             }
 
@@ -104,7 +101,6 @@ void write_func(size_t initial_read, size_t header_len, size_t remaining, int w_
             ssize_t bytes_written = write_n_bytes(w_fd, p, bytes_to_write);
 
             if (bytes_written < 0) {
-                // printf("Something wen wrong when writing\n");
                 return;
             }
 
@@ -146,8 +142,6 @@ void get_logic(char buf[BUFFER_SIZE], regmatch_t pmatch[], int connfd) {
         ssize_t read_res = read_n_bytes(read_fd, file_buffer, sizeof(file_buffer));
 
         if (read_res < 0) {
-            char error[] = "There is an error when reading the read file descriptor\n";
-            write_n_bytes(connfd, error, sizeof(error) - 1);
             close(connfd);
             return;
         }
@@ -162,8 +156,6 @@ void get_logic(char buf[BUFFER_SIZE], regmatch_t pmatch[], int connfd) {
         while (bytes_to_write > 0) {
             ssize_t w_res = write_n_bytes(connfd, p, bytes_to_write);
             if (w_res < 0) {
-                char error[] = "There is an error when writing the content of the given file\n";
-                w_res = write_n_bytes(connfd, error, sizeof(error) - 1);
                 close(connfd);
                 return;
             }
